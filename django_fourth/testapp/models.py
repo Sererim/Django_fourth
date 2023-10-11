@@ -2,7 +2,7 @@ from datetime import  datetime
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.exceptions import ValidationError
-
+from PIL import Image
 
 # Create your models here.
 
@@ -29,11 +29,22 @@ class Product(models.Model):
     amount = models.IntegerField()
     date_of_addition = models.DateTimeField(auto_now_add=True)
     
+    # Additional column in a database that will store images, allows to have no image for a product.
+    image = models.ImageField(upload_to='products_images/', blank=True, null=True)
+    
     def clean(self) -> None:
         if self.price <= 0:
             raise ValidationError("Price can not be zero or negative.")
         if self.amount <= 0:
             raise ValidationError("Amount can not be zero or negative.")
+    
+    # Function that will save images.
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.image:
+            img = Image.open(self.image.path)
+            img.save(self.image.path)
+    
     
     def __str__(self) -> str:
         return f"Product name: {self.name}\n" \
