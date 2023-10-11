@@ -14,9 +14,7 @@
     <p> Price: {{ product.price }} </p>
 
     {% if product.image %}
-        <img src= {{ product.image.url }} alt = {{ product.name }}>
+        <img src= "{{ product.image.url }}" alt = "{{ product.name }}">
     {% endif %}
-
-    <a href={% url 'upload_image' product_id=product.id %}>Upload Image</a>
 </body>
 </html>

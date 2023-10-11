@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.utils.timezone import datetime, timedelta
 from .models import Client, Product, Order
 from PIL import Image
+from io import BytesIO
 
 
 def order_list(request):
@@ -43,9 +44,12 @@ def upload_image(request, product_id):
         image_file = request.FILES['image']
         try:
             img = Image.open(image_file)
-            product.image.save(image_file.name, img)
+            img_bytes = BytesIO()
+            img.save(img_bytes, format='JPEG')
+            img_bytes.seek(0)
+            product.image.save(image_file.name, img_bytes)
             
-            return redirect('product_details', product=product_id)
+            return redirect('product_details', product_id=product_id)
         except IOError:
             product.image = None
             product.save()
